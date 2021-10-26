@@ -48,7 +48,7 @@ md18st05b:
         mit.printf(0, 0, "PV:  %.1f kWh", id(solaredge_production_power).state / 1000);
         mit.printf(0, 1, "akt: %.0f W", id(solaredge_current_power).state);
         mit.bar(0, 5000, id(solaredge_current_power).state);
-        if (id(solaredge_current_power).state > 10) ((m18st05b::M18ST05B&)it).show_cd(3, 2);
+        if (id(solaredge_current_power).state > 10) mit.show_cd(3, 2);
         mit.image("sun");
     ...
 ```
