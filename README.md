@@ -1,12 +1,12 @@
 # esphome-components
 A collection of additional components for ESPHome
 
-**M18ST05B
+## M18ST05B
 Initial version of a UART-based display component for the Medion
 MD18ST05B display. It was used in older computers from Medion -
 see http://www.hit-karlsruhe.de/aol2mime/medion_md_8800_vfd.htm
 
-*Features:
+## Features
 - print text (including printf, row/column, text alignment)
 - strftime function to show the current time (note: RTC of the
   display is not yet used)
@@ -16,7 +16,7 @@ see http://www.hit-karlsruhe.de/aol2mime/medion_md_8800_vfd.htm
 - set the small 9x8 pixel image
 - set the bar graph and some other special items of the display
 
-*Usage:
+## Usage
 connect the display to +5V, GND and a Tx UART pin (I'm using the
 second UART on a D1 mini (GPIO2/D4)).
 Inside the esphome Yaml configuration file configure the UART:
