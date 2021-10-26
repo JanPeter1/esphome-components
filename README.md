@@ -19,17 +19,22 @@ see http://www.hit-karlsruhe.de/aol2mime/medion_md_8800_vfd.htm
 ## Usage
 connect the display to +5V, GND and a Tx UART pin (I'm using the
 second UART on a D1 mini (GPIO2/D4)).
-Inside the esphome Yaml configuration file configure the UART:
+Inside the esphome Yaml configuration file include the md18st05b
+component and configure the UART:
 ```
+external_components:
+  - source: github://JanPeter1/esphome-components
+  
+uart:
   tx_pin: 2
   baud_rate: 9600
   id: uart_disp
 ```
-And add the display component:
+Now add the display component:
 ```
 md18st05b:
   id: my_display
-  name: $upper_devicename
+  name: "My Display"
   pages:
     - id: page_time
       lambda: |-
