@@ -14,6 +14,7 @@ see http://www.hit-karlsruhe.de/aol2mime/medion_md_8800_vfd.htm
 - derived from switch component so that the display can be turned
   off and on ("off" = no text shown)
 - set the small 9x8 pixel image
+- draw on thae pixel image (line, circle, etc.)
 - set the bar graph and some other special items of the display
 
 ## Usage
@@ -53,8 +54,8 @@ md18st05b:
     ...
 ```
 
-## image9x8
-Allows the definition of small 9x8 black-and-white images for the usage in the small
+## image9x7
+Allows the definition of small 9x7 black-and-white images for the usage in the small
 pixel display of the MD18ST05B.
 
 ```
