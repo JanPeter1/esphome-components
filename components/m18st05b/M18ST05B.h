@@ -53,13 +53,6 @@ protected:
   char _text[DISP_HEIGHT][DISP_WIDTH+1];
 };
 
-class Image9x7: public Image {
- public:
-  Image9x7(const uint8_t *data_start, int width, int height, ImageType type);
-  virtual bool get_pixel(int x, int y) const override;
-  virtual Color get_color_pixel(int x, int y) const override;
-  virtual Color get_grayscale_pixel(int x, int y) const override;
-};
 
 }  // namespace m18st05b
 }  // namespace esphome

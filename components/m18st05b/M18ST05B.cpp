@@ -313,26 +313,6 @@ void M18ST05B::draw_absolute_pixel_internal(int x, int y, Color color)
   }
 }
 
-Image9x7::Image9x7(const uint8_t *data_start, int width, int height, ImageType type)
-: Image(data_start, width, height, type)
-{}
-
-bool Image9x7::get_pixel(int x, int y) const {
-  if (x < 0 || x >= this->width_ || y < 0 || y >= this->height_)
-    return false;
-  const uint32_t width_8 = ((this->height_ + 7u) / 8u) * 8u;
-  const uint32_t pos = (this->height_ - y - 1) + (this->width_ - x - 1) * width_8;
-  return progmem_read_byte(this->data_start_ + (pos / 8u)) & (0x80 >> (pos % 8u));
-}
-
-Color Image9x7::get_color_pixel(int x, int y) const {
-  return get_pixel(x, y)? Color::BLACK : Color::WHITE;
-}
-
-Color Image9x7::get_grayscale_pixel(int x, int y) const {
-  return get_pixel(x, y)? Color::BLACK : Color::WHITE;
-}
-
 
 }  // namespace m18st05b
 }  // namespace esphome

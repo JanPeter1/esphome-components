@@ -54,7 +54,7 @@ md18st05b:
     ...
 ```
 
-## image9x7
+## Image9x7
 Allows the definition of small 9x7 black-and-white images for the usage in the small
 pixel display of the MD18ST05B.
 
