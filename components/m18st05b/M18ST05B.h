@@ -19,8 +19,14 @@ class M18ST05B
 public:
   static const int DISP_HEIGHT = 2;
   static const int DISP_WIDTH = 16;
+  static const int BUFFER_SIZE = 9;
+
+  M18ST05B();
+  ~M18ST05B();
 
   void setup() override;
+  void dump_config() override;
+
   virtual void update() override;
   virtual void clear();
 
@@ -32,7 +38,6 @@ public:
       __attribute__((format(printf, 4, 5)));
   void strftime(int x, int y, TextAlign align, const char *format, time::ESPTime time)
       __attribute__((format(strftime, 5, 0)));
-  void image(const char *image);
   void bar(float minval, float maxval, float value);
   void show_cd(uint8_t dim, uint8_t turn);
 
@@ -40,12 +45,20 @@ public:
   virtual void write_state(bool newState);
 
 protected:
-  virtual void draw_absolute_pixel_internal(int x, int y, Color color) override {/* tbd */};
-  virtual int get_height_internal() override { return 7; };
+  virtual void draw_absolute_pixel_internal(int x, int y, Color color) override;
+  virtual int get_height_internal() override { return 8; };
   virtual int get_width_internal() override { return 9; };
   void vprintf_(int x, int y, TextAlign align, const char *format, va_list arg);
 
   char _text[DISP_HEIGHT][DISP_WIDTH+1];
+};
+
+class Image9x7: public Image {
+ public:
+  Image9x7(const uint8_t *data_start, int width, int height, ImageType type);
+  virtual bool get_pixel(int x, int y) const override;
+  virtual Color get_color_pixel(int x, int y) const override;
+  virtual Color get_grayscale_pixel(int x, int y) const override;
 };
 
 }  // namespace m18st05b

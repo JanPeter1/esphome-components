@@ -91,7 +91,9 @@ const uint8_t disable_line[] = { ESC, 'S' };
 const uint8_t lineall[] = { ESC, 0x20 };   // select both lines
 const uint8_t line1[] = { ESC, 0x21 };  // select line 1
 const uint8_t line2[] = { ESC, 0x22 };  // select line 2
+const uint8_t empty_image[] = { ESC,  0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+/*
 // icons
 const std::map<const char *, std::array<uint8_t, 11>> icons = {
   { "empty", std::array<uint8_t, 11>{0x1B, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
@@ -100,16 +102,41 @@ const std::map<const char *, std::array<uint8_t, 11>> icons = {
   { "time",  std::array<uint8_t, 11>{0x1B, 0x31, 0x00, 0x1C, 0x22, 0x49, 0x49, 0x45, 0x22, 0x1C, 0x00}},
   { "temp",  std::array<uint8_t, 11>{0x1B, 0x31, 0x22, 0x41, 0x41, 0x22, 0x1C, 0x00, 0x07, 0x05, 0x07}},
 };
+*/
+
+M18ST05B::M18ST05B()
+: PollingComponent()
+, display::DisplayBuffer()
+, uart::UARTDevice()
+, switch_::Switch()
+{
+  buffer_ = (uint8_t*)malloc(BUFFER_SIZE);
+  memset(buffer_, 0, BUFFER_SIZE);
+  //rotation_ = DISPLAY_ROTATION_270_DEGREES;
+}
+
+M18ST05B::~M18ST05B()
+{
+  if (nullptr != buffer_) free(buffer_);
+}
 
 void M18ST05B::setup() {
   PollingComponent::setup();
   write_state(get_initial_state().value_or(true));
 }
 
+void M18ST05B::dump_config()
+{
+  LOG_DISPLAY("", "Medion M18ST05B", this);
+//  LOG_UART_DEVICE(this);
+  LOG_SWITCH("", "", this);
+}
+
 void M18ST05B::update() {
   static char old_text[DISP_HEIGHT][DISP_WIDTH+1];
   static DisplayPage *old_page;
   static bool old_state = false;
+  static uint8_t old_image[BUFFER_SIZE];
 
   if (state) {
     for (int i=0; i<DISP_HEIGHT; i++)
@@ -136,6 +163,16 @@ void M18ST05B::update() {
       // remember current text
       memcpy(old_text, _text, sizeof(_text));
     }
+
+    if (0 != memcmp(old_image, buffer_, BUFFER_SIZE))
+    { // image
+      write_byte(ESC);
+      write_byte(0x31);
+      write_array(buffer_, BUFFER_SIZE);
+
+      // remember current image
+      memcpy(old_image, buffer_, BUFFER_SIZE);
+    }
   }
 }
 
@@ -143,7 +180,7 @@ void M18ST05B::clear()
 {
     //ESP_LOGD(TAG, "clear");
     for (int i=0; i<= 27; i++) write_service(i, 0);
-    image("empty");
+    write_array(empty_image, 11);
     write_array(lineall, 2);
     write_array(cls, 2);
 }
@@ -195,18 +232,6 @@ void M18ST05B::strftime(int x, int y, TextAlign align, const char *format, time:
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)
     this->print(x, y, align, buffer);
-}
-
-void M18ST05B::image(const char *image)
-{
-  if (state) {
-    auto ic = icons.find(image);
-    if (ic != icons.end()) {
-      write_array(ic->second.data(), 11);
-    } else {
-      write_array(icons.at("empty").data(), 11);
-    }
-  }
 }
 
 void M18ST05B::bar(float minval, float maxval, float value)
@@ -272,6 +297,40 @@ void M18ST05B::write_state(bool newState)
   }
   publish_state(newState);
   update();
+}
+
+void M18ST05B::draw_absolute_pixel_internal(int x, int y, Color color)
+{
+  if (x >= this->get_width_internal() || x < 0 || y >= this->get_height_internal() || y < 0)
+    return;
+
+  uint16_t pos = (this->get_width_internal() - x - 1) + (y / 8) * this->get_width_internal();
+  uint8_t subpos = y & 0x07;
+  if (color.is_on()) {
+    this->buffer_[pos] |= (1 << subpos);
+  } else {
+    this->buffer_[pos] &= ~(1 << subpos);
+  }
+}
+
+Image9x7::Image9x7(const uint8_t *data_start, int width, int height, ImageType type)
+: Image(data_start, width, height, type)
+{}
+
+bool Image9x7::get_pixel(int x, int y) const {
+  if (x < 0 || x >= this->width_ || y < 0 || y >= this->height_)
+    return false;
+  const uint32_t width_8 = ((this->height_ + 7u) / 8u) * 8u;
+  const uint32_t pos = (this->height_ - y - 1) + (this->width_ - x - 1) * width_8;
+  return progmem_read_byte(this->data_start_ + (pos / 8u)) & (0x80 >> (pos % 8u));
+}
+
+Color Image9x7::get_color_pixel(int x, int y) const {
+  return get_pixel(x, y)? Color::BLACK : Color::WHITE;
+}
+
+Color Image9x7::get_grayscale_pixel(int x, int y) const {
+  return get_pixel(x, y)? Color::BLACK : Color::WHITE;
 }
 
 
