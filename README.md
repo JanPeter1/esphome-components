@@ -69,3 +69,34 @@ Usage:
 ```
   id(my_display)->image(0, 0, id(image_temp));
 ```
+
+## Using icons from TTF font
+The small 9x7 display can also be used to show single characters from a TTF front.
+Here is an example using MDI icons:
+```
+substitutions:
+  devicename: "My Display"
+  mdi_car: "\U000F010B"
+  mdi_clock_outline: "\U000F0150"
+
+font:
+  - file: "fonts/materialdesignicons-webfont.ttf"
+    id: mat_font
+    size: 9
+    glyphs: [ 
+      $mdi_car,
+      $mdi_clock_outline,
+    ]
+
+m18st05b:
+  id: my_display
+  name: $devicename
+  pages:
+    - id: page_time
+      lambda: |-
+        m18st05b::M18ST05B& mit = (m18st05b::M18ST05B&)it;
+        mit.strftime(0, 0, TextAlign::CENTER, "%H:%M:%S", id(homeassistant_time).now());
+        mit.strftime(0, 1, TextAlign::CENTER, "%d.%m.%Y", id(homeassistant_time).now());
+        it.print(0, -1, id(mat_font), "$mdi_clock_outline");
+     ...
+```
