@@ -128,7 +128,6 @@ void M18ST05B::setup() {
 void M18ST05B::dump_config()
 {
   LOG_DISPLAY("", "Medion M18ST05B", this);
-//  LOG_UART_DEVICE(this);
   LOG_SWITCH("", "", this);
 }
 
@@ -179,7 +178,7 @@ void M18ST05B::update() {
 void M18ST05B::clear() 
 {
     //ESP_LOGD(TAG, "clear");
-    for (int i=0; i<= 27; i++) write_service(i, 0);
+    for (int i=0; i<=27; i++) write_service(i, 0);
     write_array(empty_image, 11);
     write_array(lineall, 2);
     write_array(cls, 2);
@@ -282,6 +281,7 @@ void M18ST05B::write_service(const uint8_t id, const uint8_t data)
 
 void M18ST05B::write_state(bool newState)
 {
+  if (!newState) newState = state;
   ESP_LOGD(TAG, "Switch state from %d to %d", state, newState);
   if (false == newState) {
     clear();
@@ -300,7 +300,7 @@ void M18ST05B::write_state(bool newState)
 }
 
 void M18ST05B::draw_absolute_pixel_internal(int x, int y, Color color)
-{
+{ // need to flip horizontally
   if (x >= this->get_width_internal() || x < 0 || y >= this->get_height_internal() || y < 0)
     return;
 
