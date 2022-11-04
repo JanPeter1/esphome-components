@@ -281,7 +281,6 @@ void M18ST05B::write_service(const uint8_t id, const uint8_t data)
 
 void M18ST05B::write_state(bool newState)
 {
-  if (!newState) newState = state;
   ESP_LOGD(TAG, "Switch state from %d to %d", state, newState);
   if (false == newState) {
     clear();
