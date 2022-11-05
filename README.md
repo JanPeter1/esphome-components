@@ -24,8 +24,9 @@ Inside the esphome Yaml configuration file include the md18st05b
 component and configure the UART:
 ```
 external_components:
-  - source: github://JanPeter1/esphome-components
-  
+  source: github://JanPeter1/esphome-components
+  components: [ md18st05b ]
+
 uart:
   tx_pin: 2
   baud_rate: 9600
@@ -113,7 +114,8 @@ good (ie. you have to be quite close to detect a motion). More tests are require
 ### Usage
 ```
 external_components:
-  - source: github://JanPeter1/esphome-components
+  source: github://JanPeter1/esphome-components
+  components: [ wifi_csi ]
   
 wifi_csi:
   id: csi_motion
