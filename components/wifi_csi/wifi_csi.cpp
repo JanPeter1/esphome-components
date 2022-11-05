@@ -2,7 +2,7 @@
 #include "wifi_csi.h"
 
 static const char *const TAG = "wifi_csi";
-//extern esphome::wifi::WiFiComponent *global_wifi_component;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+extern esphome::wifi::WiFiComponent *esphome::wifi::global_wifi_component;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 esphome::wifi_csi::CsiSensor::CsiSensor()
 : PollingComponent()
@@ -62,8 +62,7 @@ void esphome::wifi_csi::CsiSensor::update() {
 
     if (m_rssi) {            
         int currentRssi = 0;
-        //if (nullptr != global_wifi_component) currentRssi = esphome::wifi::global_wifi_component->wifi_rssi();
-        currentRssi = WiFi.RSSI();
+        if (nullptr != esphome::wifi::global_wifi_component) currentRssi = esphome::wifi::global_wifi_component->wifi_rssi();
         if (cnt == m_bufferSize) {
             sum -= m_rssi[idx];  // we will overwrite the oldest value, so remove it from the current sum
         } else {
