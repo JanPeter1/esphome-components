@@ -1,4 +1,12 @@
 
+/**
+ * @brief Simple motion detection sensor that uses the WiFi signal strength
+ *        signal (RSSI) to detect motions.
+ *
+ * @author Jan Peter Riegel <JanPeter1@familie-riegel.de>
+ * Copyright (c) 2022
+ */
+
 #pragma once
 
 #include "esphome.h"
