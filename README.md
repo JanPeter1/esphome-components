@@ -130,6 +130,8 @@ _buffer_size_ is the length of the buffer (ie. the amount of RSSI readings over 
 _hysteresis_ is the minimal deviation from the average value that leads to a motion detection (default value is 2)
 
 You might want to add a filter like this, so that the motion value does not toggle too often:
+```
   filters:
       - delayed_off: 500ms
       - delayed_on: 500ms
+```
