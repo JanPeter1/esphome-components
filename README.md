@@ -125,6 +125,11 @@ wifi_csi:
 #  hysteresis: 2
 ```
 
-timing is an optional parameter and gives the cycle time in which the RSSI value is read (default value is 100ms).
-buffer_size is the length of the buffer (ie. the amount of RSSI readings over which the average value gets calculated, default value is 100)
-hysteresis is the minimal deviation from the average value that leads to a motion detection (default value is 2)
+_timing_ is an optional parameter and gives the cycle time in which the RSSI value is read (default value is 100ms).
+_buffer_size_ is the length of the buffer (ie. the amount of RSSI readings over which the average value gets calculated, default value is 100)
+_hysteresis_ is the minimal deviation from the average value that leads to a motion detection (default value is 2)
+
+You might want to add a filter like this, so that the motion value does not toggle too often:
+  filters:
+      - delayed_off: 500ms
+      - delayed_on: 500ms
