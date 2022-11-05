@@ -29,7 +29,7 @@ CONFIG_SCHEMA = (
     .extend(cv.COMPONENT_SCHEMA)
     .extend({
         cv.Optional(CONF_TIMING): cv.positive_time_period_milliseconds,
-        cv.Optional(CONF_HYSTERESIS): cv.int_,
+        cv.Optional(CONF_HYSTERESIS): cv.float_,
         cv.Optional(CONF_BUFFER_SIZE): cv.int_,
     })
 )

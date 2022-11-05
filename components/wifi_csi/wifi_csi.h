@@ -30,7 +30,7 @@ public:
     void dump_config();
 
     void set_timing(int pollingInterval);
-    void set_sensitivity(int sensitivity);
+    void set_sensitivity(float sensitivity);
     void set_buffer_size(int bufferSize);
 
     void update() override;
@@ -38,7 +38,7 @@ public:
 protected:
     int m_pollingInterval;  ///< polling interval in ms (default: 100)
     int m_bufferSize;       ///< size of the buffer (default: 100)
-    int m_sensitivity;      ///< sensitivity - deviation from average more than this will trigger a motion (default: 2)
+    float m_sensitivity;    ///< sensitivity - deviation from average more than this will trigger a motion (default: 2)
     int *m_rssi;            ///< buffer of rssi values
 };
 

@@ -42,7 +42,7 @@ void esphome::wifi_csi::CsiSensor::dump_config()
     ESP_LOGCONFIG(TAG, "Wifi CSI:");
     ESP_LOGCONFIG(TAG, "polling interval: %dms", m_pollingInterval);
     ESP_LOGCONFIG(TAG, "buffer size: %d", m_bufferSize);
-    ESP_LOGCONFIG(TAG, "sensitivity: %d", m_sensitivity);
+    ESP_LOGCONFIG(TAG, "sensitivity: %.2f", m_sensitivity);
 }
 
 void esphome::wifi_csi::CsiSensor::set_timing(int pollingInterval)
@@ -51,7 +51,7 @@ void esphome::wifi_csi::CsiSensor::set_timing(int pollingInterval)
     set_update_interval(pollingInterval);
 }
 
-void esphome::wifi_csi::CsiSensor::set_sensitivity(int sensitivity)
+void esphome::wifi_csi::CsiSensor::set_sensitivity(float sensitivity)
 {
     m_sensitivity = sensitivity;
 }
@@ -66,7 +66,7 @@ void esphome::wifi_csi::CsiSensor::set_buffer_size(int bufferSize)
 void esphome::wifi_csi::CsiSensor::update() {
     static int idx = 0;   // pointer inside rssi
     static int cnt = 0;   // number of values inside rssi
-    static int sum = 0;   // sum of all rssi values
+    static float sum = 0.0;   // sum of all rssi values
 
     if (m_rssi) {            
         int currentRssi = 0;
@@ -80,15 +80,19 @@ void esphome::wifi_csi::CsiSensor::update() {
         idx = (idx + 1) % m_bufferSize;
         sum += currentRssi;
 
-        int avgerageRssi = sum / cnt;
-        int dev = abs(currentRssi - avgerageRssi);
+        float avgerageRssi = sum / cnt;
+        float dev = abs(currentRssi - avgerageRssi);
         bool motion = (dev >= m_sensitivity);
         publish_state(motion);
 
-        // log every 101th interval
-        static int lcnt = 0;
-        lcnt++;
-        if (lcnt % 101 == 0) ESP_LOGD(TAG, "idx: %d, cnt: %d: avg: %d, current: %d, sensitvity: %d, motion: %d", idx, cnt, avgerageRssi, currentRssi, m_sensitivity, motion);
+        // log every 5 seconds
+        static time_t last_t;
+        time_t now_t;
+        time(&now_t);
+        if (difftime(now_t, last_t) > 5.0) {
+            ESP_LOGD(TAG, "idx: %d, cnt: %d: avg: %.1f, current: %d, sensitvity: %d, motion: %d", idx, cnt, avgerageRssi, currentRssi, m_sensitivity, motion);
+            last_t = now_t;
+        }
     } else {
         set_buffer_size(m_bufferSize);  // create the rssi buffer
     }
